@@ -10,3 +10,7 @@ If you made any new changes on the command please run
 to run the server locally, please run
 
 `node index.js `
+
+# Token, guildId, and clientId
+
+please request to me personally, i will give it to you :)
