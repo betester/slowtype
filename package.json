@@ -1,0 +1,22 @@
+{
+  "name": "slowtype",
+  "version": "1.0.0",
+  "description": "A discord bot for type racing",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/betester/slowtype.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/betester/slowtype/issues"
+  },
+  "homepage": "https://github.com/betester/slowtype#readme",
+  "dependencies": {
+    "dotenv": "^16.0.1"
+  }
+}
