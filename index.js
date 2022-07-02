@@ -25,5 +25,3 @@ client.on("interactionCreate", async (interaction) => {
 });
 // Login to Discord with your client's token
 client.login(token);
-
-console.log("adsa");
