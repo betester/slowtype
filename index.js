@@ -1,15 +1,13 @@
 require("dotenv").config();
 const { Client, Intents } = require("discord.js");
 const token = process.env.DISCORD_TOKEN;
-
-    // console.log(token, "index js");
 // Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
 // When the client is ready, run this code (only once)
-        // console.log("asdad");
+// console.log("asdad");
 client.once("ready", () => {
-//   console.log("Ready!");
+  //   console.log("Ready!");
 });
 
 client.on("interactionCreate", async (interaction) => {
