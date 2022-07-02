@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
@@ -7,8 +7,6 @@ const { Routes } = require("discord-api-types/v9");
 const guildId = process.env.GUILD_ID;
 const clientId = process.env.CLIENT_ID;
 const token = process.env.DISCORD_TOKEN;
-
-
 
 // console.log(token,"deploy-commands");
 
@@ -22,6 +20,9 @@ const commands = [
   new SlashCommandBuilder()
     .setName("user")
     .setDescription("Replies with user info!"),
+  new SlashCommandBuilder()
+    .setName("sayalhamdulillah")
+    .setDescription("Replies with Alhamdulillah!"),
 ].map((command) => command.toJSON());
 
 const rest = new REST({ version: "9" }).setToken(token);
