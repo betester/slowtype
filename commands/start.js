@@ -17,7 +17,7 @@
 module.exports = {
   callback: (message) => {
     let response = "here are the participants: \n";
-    const TIME_LIMIT = 60;
+    const TIME_LIMIT = 20;
     const participants = [];
 
     const GREETING_MESSAGE = `you have 1 minute to partipate on the competition.
@@ -51,12 +51,37 @@ module.exports = {
       message.channel.send(response);
     };
 
+    const sendStartingRaceMessage = () => {
+      sendParticipatedMessage();
+      message.channel.send("please wait, generating text just for you :)");
+      setTimeout(async () => {
+        message.channel.send("get ready");
+        setTimeout(() => {
+          message.channel.send("1");
+        }, 1000);
+
+        setTimeout(() => {
+          message.channel.send("2");
+        }, 1000);
+
+        setTimeout(() => {
+          message.channel.send("3");
+        }, 1000);
+        setTimeout(() => {
+          message.channel.send("isap boh na");
+        }, 3000);
+      }, 3000);
+    };
+
     const filter = (m) => {
       switch (m.content) {
         case "!participate":
           return isAlreadyParticipated(m);
 
         case "!cancel":
+          return message.user.id === m.author.id;
+
+        case "!startrace":
           return message.user.id === m.author.id;
 
         default:
@@ -79,14 +104,18 @@ module.exports = {
         message.channel.send(
           `${m.author.username} has stopped the competition`
         );
-        collector.stop();
+        collector.stop("!cancel");
+      } else if (m.content === "!startrace") {
+        `${m.author.username} has started the competition`;
+        collector.stop("!startrace");
       }
+
       participants.push(m.author.username);
     });
 
-    collector.on("end", (collected) => {
-      if (!(collected[collected.size() - 1].content === "!cancel")) {
-        sendParticipatedMessage();
+    collector.on("end", (collected, reason) => {
+      if (reason !== "!cancel") {
+        sendStartingRaceMessage();
       }
     });
   },
