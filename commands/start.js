@@ -16,53 +16,78 @@
 
 module.exports = {
   callback: (message) => {
-    let text = "here are your answers";
+    let response = "here are the participants: \n";
+    const TIME_LIMIT = 60;
+    const participants = [];
 
-    const questions = [
-      "siapa presiden pertama?",
-      "siapa nama bapak kaesang?",
-      "apakah ada yang terjadi di tianmen square?",
-      "berapa social credit anda?",
-    ];
+    const GREETING_MESSAGE = `you have 1 minute to partipate on the competition.
+      - Please type !participate in order to participate.
+      - !forgo to cancel the participation.
+      - You can also cancel the contest by typing !cancel.
+      - if all ready to start, type !startrace.`;
 
-    const correctAnswer = ["soekarno", "jokowi", "nothing", "100"];
+    const isAlreadyParticipated = (m) => {
+      const isParticipated =
+        m.content === "!participate" &&
+        !participants.includes(m.author.username);
 
-    let counter = 0;
-    console.log(message, "message");
+      sendParticipationStatusMessage(isParticipated, m.author.username);
+
+      return isParticipated;
+    };
+
+    const sendParticipationStatusMessage = (status, username) => {
+      if (status) {
+        message.channel.send(`${username} just participated!`);
+      } else {
+        message.channel.send(`${username} already participated!`);
+      }
+    };
+
+    const sendParticipatedMessage = () => {
+      participants.forEach((participated) => {
+        response += participated + "\n";
+      });
+      message.channel.send(response);
+    };
 
     const filter = (m) => {
-      console.log(m, "mazda");
-      return m.author.id === message.user.id;
+      switch (m.content) {
+        case "!participate":
+          return isAlreadyParticipated(m);
+
+        case "!cancel":
+          return message.user.id === m.author.id;
+
+        default:
+          return false;
+      }
     };
 
     const collector = message.channel.createMessageCollector({
       filter,
-      time: 15000,
-      max: questions.length,
+      time: 1000 * TIME_LIMIT,
     });
 
-    message.channel.send(questions[counter++]);
+    // console.log(message,"whole message")
+
+    message.channel.send(GREETING_MESSAGE);
+    participants.includes(message.user.username);
 
     collector.on("collect", (m) => {
-      if (counter < questions.length) {
-        m.channel.send(questions[counter]);
-        counter++;
+      if (m.content === "!cancel") {
+        message.channel.send(
+          `${m.author.username} has stopped the competition`
+        );
+        collector.stop();
       }
+      participants.push(m.author.username);
     });
 
     collector.on("end", (collected) => {
-      let number = 1;
-      collected.forEach((answer) => {
-        text += `\n ${number}. ${answer.content} by ${
-          answer.author.username
-        } which is ${
-          correctAnswer[number - 1] === answer.content.toLowerCase()
-            ? "correct"
-            : "wrong"
-        }`;
-        number++;
-      });
-      message.channel.send(text);
+      if (!(collected[collected.size() - 1].content === "!cancel")) {
+        sendParticipatedMessage();
+      }
     });
   },
 };
