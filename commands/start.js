@@ -14,6 +14,87 @@
 // tampilin leaderboard yang tercepat, ada wpm sama accuracy-nya
 //done
 
+const minuteDifference = (dateOne, dateTwo) => {
+  var diffMs = dateTwo - dateOne;
+  var diffMins = ((diffMs % 86400000) % 3600000) / 60000;
+  return diffMins;
+};
+
+const getWordPerMinute = (minutes, wordCount) => {
+  return wordCount / minutes;
+};
+
+const getAccuracy = (submittedWord, realWord) => {
+  let correctCharacter = 0;
+
+  for (let i = 0; i < submittedWord.length && i < realWord.length; i++) {
+    if (submittedWord.charAt(i) === realWord.charAt(i)) {
+      correctCharacter++;
+    }
+  }
+
+  return (correctCharacter / realWord.length) * 100;
+};
+
+const handleRaceMessages = (participants, message) => {
+  const RACE_TIME_LIMIT = 30;
+  const DUMMY_TEXT = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam dolor orci, mollis sagittis leo a, eleifend suscipit metus. Maecenas magna dui, aliquet vel ex vel, interdum semper massa. Etiam quis mauris lorem. Aenean fringilla, nunc eu egestas sodales, ipsum erat tempus nunc, sit amet suscipit urna sem a mauris. Donec porta cursus lorem, nec dignissim metus pulvinar eget. Praesent vulputate quis nisi sed fermentum. Proin nec dui lorem.`;
+  const submitters = [];
+  let sendedMessage;
+
+  const filter = (m) => {
+    return participants.includes(m.author.username);
+  };
+
+  message.channel.send(DUMMY_TEXT).then((result) => {
+    sendedMessage = result;
+  });
+
+  const raceCollector = message.channel.createMessageCollector({
+    filter,
+    time: 1000 * RACE_TIME_LIMIT,
+  });
+
+  raceCollector.on("collect", (m) => {
+    if (submitters.includes(m.author.username)) {
+      message.channel.send(`${m.author.username} already submitted `);
+    } else {
+      submitters.push(m.author.username);
+    }
+    if (submitters.length === participants.length - 1) {
+      raceCollector.stop("finished");
+    }
+  });
+
+  raceCollector.on("end", (collected, reason) => {
+    const sendedMessageTime = sendedMessage.createdTimestamp;
+    //TODO: calculate the time for each of the anu;
+    if (reason === "finished") {
+      message.channel.send(
+        "All have finished in time, here are the results : "
+      );
+    } else {
+      message.channel.send("Times up! here are the results : ");
+    }
+
+    collected.forEach((collectee) => {
+      const words = collectee.content.split(" ").length;
+      const wpm = getWordPerMinute(
+        minuteDifference(
+          new Date(sendedMessageTime),
+          new Date(collectee.createdTimestamp)
+        ),
+        words
+      );
+
+      const accuracy = getAccuracy(collectee.content, DUMMY_TEXT);
+      message.channel.send(
+        `${collectee.author.username} with wpm ${wpm} and accuracy ${accuracy}%`
+      );
+    });
+  });
+};
+
 module.exports = {
   callback: (message) => {
     let response = "here are the participants: \n";
@@ -54,23 +135,18 @@ module.exports = {
     const sendStartingRaceMessage = () => {
       sendParticipatedMessage();
       message.channel.send("please wait, generating text just for you :)");
-      setTimeout(async () => {
-        message.channel.send("get ready");
-        setTimeout(() => {
-          message.channel.send("1");
-        }, 1000);
+      message.channel.send("get ready");
+      setTimeout(() => {
+        message.channel.send("1");
+      }, 1000);
 
-        setTimeout(() => {
-          message.channel.send("2");
-        }, 1000);
+      setTimeout(() => {
+        message.channel.send("2");
+      }, 1000);
 
-        setTimeout(() => {
-          message.channel.send("3");
-        }, 1000);
-        setTimeout(() => {
-          message.channel.send("isap boh na");
-        }, 3000);
-      }, 3000);
+      setTimeout(() => {
+        message.channel.send("3");
+      }, 1000);
     };
 
     const filter = (m) => {
@@ -116,6 +192,9 @@ module.exports = {
     collector.on("end", (collected, reason) => {
       if (reason !== "!cancel") {
         sendStartingRaceMessage();
+        setTimeout(() => {
+          handleRaceMessages(participants, message);
+        }, 3000);
       }
     });
   },
