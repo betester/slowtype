@@ -17,11 +17,11 @@ const sendParticipationStatusMessage = (status, username, message) => {
   }
 };
 
-const isAlreadyParticipated = (m) => {
+const isAlreadyParticipated = (m, message) => {
   const isParticipated =
     m.content === "!participate" && !participants.includes(m.author.username);
 
-  sendParticipationStatusMessage(isParticipated, m.author.username);
+  sendParticipationStatusMessage(isParticipated, m.author.username, message);
 
   return isParticipated;
 };
@@ -34,7 +34,7 @@ const sendParticipatedMessage = (message) => {
 };
 
 const sendStartingRaceMessage = (message) => {
-  sendParticipatedMessage();
+  sendParticipatedMessage(message);
   message.channel.send("please wait, generating text just for you :)");
   message.channel.send("get ready");
   setTimeout(() => {
@@ -55,7 +55,7 @@ module.exports = {
     const filter = (m) => {
       switch (m.content) {
         case "!participate":
-          return isAlreadyParticipated(m);
+          return isAlreadyParticipated(m, message);
 
         case "!cancel":
           return message.user.id === m.author.id;
@@ -94,7 +94,7 @@ module.exports = {
 
     collector.on("end", (collected, reason) => {
       if (reason !== "!cancel") {
-        sendStartingRaceMessage();
+        sendStartingRaceMessage(message);
         setTimeout(() => {
           startRaceHandler.handleRaceMessages(participants, message);
         }, 3000);
