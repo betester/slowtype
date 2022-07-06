@@ -57,7 +57,9 @@ const handleRaceMessages = (participants, message) => {
         textTests
       );
       message.channel.send(
-        `${collectee.author.username} with wpm ${wpm} and accuracy ${accuracy}%`
+        `${collectee.author.username} with wpm ${wpm.toFixed(
+          2
+        )} and accuracy ${accuracy.toFixed(2)}%`
       );
     });
   });
