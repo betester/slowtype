@@ -1,41 +1,5 @@
-//start
-//TODO
-// pertama 1 user bakalan mulai dengan /start
-// abis itu user lain bisa coba /enroll atau /participate
-// kalau udah semua /startrace
-// generate stringnya dulu (pakai api atau apa kek)
-// countdown dari 1,2,3
-// mulai timer
-// kirim text-nya
-// hitung kecepatan peserta
-// berhenti kalau
-// 1. partisipan udah selesai semua
-// 2. udah abis waktu
-// tampilin leaderboard yang tercepat, ada wpm sama accuracy-nya
-//done
 const textGenerator = require("../utils/random_word/RandomTextGenerator");
-
-const minuteDifference = (dateOne, dateTwo) => {
-  var diffMs = dateTwo - dateOne;
-  var diffMins = ((diffMs % 86400000) % 3600000) / 60000;
-  return diffMins;
-};
-
-const getWordPerMinute = (minutes, wordCount) => {
-  return wordCount / minutes;
-};
-
-const getAccuracy = (submittedWord, realWord) => {
-  let correctCharacter = 0;
-
-  for (let i = 0; i < submittedWord.length && i < realWord.length; i++) {
-    if (submittedWord.charAt(i) === realWord.charAt(i)) {
-      correctCharacter++;
-    }
-  }
-
-  return (correctCharacter / realWord.length) * 100;
-};
+const performanceCalculator = require("../utils/RacePerformanceCalculator");
 
 const handleRaceMessages = (participants, message) => {
   const RACE_TIME_LIMIT = 60;
@@ -80,15 +44,18 @@ const handleRaceMessages = (participants, message) => {
 
     collected.forEach((collectee) => {
       const words = collectee.content.split(" ").length;
-      const wpm = getWordPerMinute(
-        minuteDifference(
+      const wpm = performanceCalculator.getWordPerMinute(
+        performanceCalculator.minuteDifference(
           new Date(sendedMessageTime),
           new Date(collectee.createdTimestamp)
         ),
         words
       );
 
-      const accuracy = getAccuracy(collectee.content, textTests);
+      const accuracy = performanceCalculator.getAccuracy(
+        collectee.content,
+        textTests
+      );
       message.channel.send(
         `${collectee.author.username} with wpm ${wpm} and accuracy ${accuracy}%`
       );
