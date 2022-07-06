@@ -1,23 +1,6 @@
-const isRandomLowerCase = () => {
-  const determiner = Math.random();
-  if (determiner <= 0.5) {
-    return true;
-  }
-
-  return false;
-};
-
 const generateRandomCharacter = () => {
-  let MIN_ALPHABET;
-  let MAX_ALPHABET;
-
-  if (isRandomLowerCase()) {
-    MIN_ALPHABET = 97;
-    MAX_ALPHABET = 122;
-  } else {
-    MIN_ALPHABET = 65;
-    MAX_ALPHABET = 90;
-  }
+  let MIN_ALPHABET = 97;
+  let MAX_ALPHABET = 122;
 
   const DIFFERENCE = MAX_ALPHABET - MIN_ALPHABET;
 
@@ -42,13 +25,12 @@ const generateRandomSentence = (manyWords) => {
   let sentence = "";
   for (let i = 0; i < manyWords; i++) {
     sentence += generateRandomWord();
-    if (i == manyWords) {
+    if (i == manyWords - 1) {
       sentence += ". ";
     } else {
       sentence += " ";
     }
   }
-  sentence += ".";
   return sentence;
 };
 

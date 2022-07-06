@@ -13,6 +13,7 @@
 // 2. udah abis waktu
 // tampilin leaderboard yang tercepat, ada wpm sama accuracy-nya
 //done
+const textGenerator = require("../utils/random_word/RandomTextGenerator");
 
 const minuteDifference = (dateOne, dateTwo) => {
   var diffMs = dateTwo - dateOne;
@@ -37,8 +38,8 @@ const getAccuracy = (submittedWord, realWord) => {
 };
 
 const handleRaceMessages = (participants, message) => {
-  const RACE_TIME_LIMIT = 30;
-  const DUMMY_TEXT = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam dolor orci, mollis sagittis leo a, eleifend suscipit metus. Maecenas magna dui, aliquet vel ex vel, interdum semper massa. Etiam quis mauris lorem. Aenean fringilla, nunc eu egestas sodales, ipsum erat tempus nunc, sit amet suscipit urna sem a mauris. Donec porta cursus lorem, nec dignissim metus pulvinar eget. Praesent vulputate quis nisi sed fermentum. Proin nec dui lorem.`;
+  const RACE_TIME_LIMIT = 60;
+  const textTests = textGenerator.generateRandomParagprah(3);
   const submitters = [];
   let sendedMessage;
 
@@ -46,7 +47,7 @@ const handleRaceMessages = (participants, message) => {
     return participants.includes(m.author.username);
   };
 
-  message.channel.send(DUMMY_TEXT).then((result) => {
+  message.channel.send(textTests).then((result) => {
     sendedMessage = result;
   });
 
@@ -87,7 +88,7 @@ const handleRaceMessages = (participants, message) => {
         words
       );
 
-      const accuracy = getAccuracy(collectee.content, DUMMY_TEXT);
+      const accuracy = getAccuracy(collectee.content, textTests);
       message.channel.send(
         `${collectee.author.username} with wpm ${wpm} and accuracy ${accuracy}%`
       );
